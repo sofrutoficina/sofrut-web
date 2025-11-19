@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# data files (contienen información sensible)
+/data/*.json
+!/data/.gitkeep
