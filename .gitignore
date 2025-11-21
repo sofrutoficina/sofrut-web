@@ -43,3 +43,6 @@ next-env.d.ts
 # data files (contienen información sensible)
 /data/*.json
 !/data/.gitkeep
+
+# documentos de seguridad privados (no publicar análisis de vulnerabilidades)
+SEGURIDAD.md
