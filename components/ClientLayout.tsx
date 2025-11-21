@@ -7,8 +7,22 @@
 
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import Navigation from './Navigation';
+import { usePathname } from 'next/navigation';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  // No mostrar Navigation en la página de login
+  const isLoginPage = pathname === '/login';
+
+  if (isLoginPage) {
+    return (
+      <ThemeProvider>
+        {children}
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ThemeProvider>
       <div className="flex">

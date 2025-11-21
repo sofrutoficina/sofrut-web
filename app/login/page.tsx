@@ -4,7 +4,9 @@ import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [recordarme, setRecordarme] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -18,7 +20,7 @@ export default function LoginPage() {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
+        body: JSON.stringify({ email, password, recordarme })
       });
 
       const data = await response.json();
@@ -27,7 +29,7 @@ export default function LoginPage() {
         router.push('/');
         router.refresh();
       } else {
-        setError('Contraseña incorrecta');
+        setError(data.error || 'Credenciales incorrectas');
         setPassword('');
       }
     } catch (err) {
@@ -52,15 +54,18 @@ export default function LoginPage() {
         <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Contraseña de acceso
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Email
               </label>
               <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Introduce la contraseña"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent
@@ -68,7 +73,50 @@ export default function LoginPage() {
                 disabled={loading}
                 required
                 autoFocus
+                autoComplete="email"
               />
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Contraseña
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Introduce tu contraseña"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading}
+                required
+                autoComplete="current-password"
+              />
+            </div>
+
+            <div className="flex items-center">
+              <input
+                id="recordarme"
+                type="checkbox"
+                checked={recordarme}
+                onChange={(e) => setRecordarme(e.target.checked)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded
+                         focus:ring-blue-500 focus:ring-2 dark:bg-gray-700
+                         dark:border-gray-600 cursor-pointer"
+                disabled={loading}
+              />
+              <label
+                htmlFor="recordarme"
+                className="ml-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none"
+              >
+                Recordarme (30 días)
+              </label>
             </div>
 
             {error && (
