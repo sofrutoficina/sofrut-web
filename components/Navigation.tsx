@@ -6,9 +6,10 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Home, Search, BarChart3, Package, ArrowDownCircle, ArrowUpCircle, Users } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Home, Search, BarChart3, Package, ArrowDownCircle, ArrowUpCircle, Users, LogOut } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { useState } from 'react';
 
 const ThemeToggle = dynamic(() => import('./ThemeToggle'), {
   ssr: false,
@@ -27,6 +28,22 @@ const menuItems = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <nav className="w-64 bg-white dark:bg-gray-800 shadow-lg h-screen fixed left-0 top-0 overflow-y-auto border-r border-gray-200 dark:border-gray-700">
@@ -67,7 +84,20 @@ export default function Navigation() {
       </div>
 
       {/* Footer */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 space-y-3">
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg
+                   bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400
+                   hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors
+                   disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <LogOut className="w-4 h-4" />
+          <span className="text-sm font-medium">
+            {isLoggingOut ? 'Cerrando...' : 'Cerrar Sesión'}
+          </span>
+        </button>
         <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
           Temporada 2025
         </p>

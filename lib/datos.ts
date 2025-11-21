@@ -1,30 +1,68 @@
 /**
- * Utilidades para cargar y procesar datos JSON
- * Carga archivos desde la carpeta data/
+ * Utilidades para cargar y procesar datos
+ * Lee datos desde Firebase Firestore
  */
 
 import { ArchivoEntradas, ArchivoSalidas, RegistroEntrada, RegistroSalida } from './types';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db } from './firebase';
 
-// Cargar datos de entradas
+// Cargar datos de entradas desde Firestore
 export async function cargarEntradas(): Promise<ArchivoEntradas> {
   try {
-    const response = await fetch('/api/datos/entradas');
-    if (!response.ok) throw new Error('Error cargando entradas');
-    return await response.json();
+    const q = query(collection(db, 'entradas'), orderBy('Fecha', 'desc'));
+    const snapshot = await getDocs(q);
+
+    const datos: RegistroEntrada[] = [];
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      // Eliminar campos internos de Firebase (que empiezan con _)
+      const { _fecha_carga, _archivo_origen, ...registro } = data;
+      datos.push(registro as RegistroEntrada);
+    });
+
+    // Retornar en el formato esperado (compatible con código existente)
+    return {
+      tipo: 'entradas',
+      archivo_original: 'firestore',
+      fecha_procesamiento: new Date().toISOString(),
+      filas_totales: datos.length,
+      columnas: datos.length > 0 ? Object.keys(datos[0]) : [],
+      inconsistencias_detectadas: 0,
+      datos
+    };
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error cargando entradas desde Firestore:', error);
     throw error;
   }
 }
 
-// Cargar datos de salidas
+// Cargar datos de salidas desde Firestore
 export async function cargarSalidas(): Promise<ArchivoSalidas> {
   try {
-    const response = await fetch('/api/datos/salidas');
-    if (!response.ok) throw new Error('Error cargando salidas');
-    return await response.json();
+    const q = query(collection(db, 'salidas'), orderBy('Fecha', 'desc'));
+    const snapshot = await getDocs(q);
+
+    const datos: RegistroSalida[] = [];
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      // Eliminar campos internos de Firebase (que empiezan con _)
+      const { _fecha_carga, _archivo_origen, ...registro } = data;
+      datos.push(registro as RegistroSalida);
+    });
+
+    // Retornar en el formato esperado (compatible con código existente)
+    return {
+      tipo: 'salidas',
+      archivo_original: 'firestore',
+      fecha_procesamiento: new Date().toISOString(),
+      filas_totales: datos.length,
+      columnas: datos.length > 0 ? Object.keys(datos[0]) : [],
+      inconsistencias_detectadas: 0,
+      datos
+    };
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error cargando salidas desde Firestore:', error);
     throw error;
   }
 }
