@@ -1,0 +1,52 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // NOTA: Como NO usamos Firebase Authentication en esta versión,
+    // las reglas son básicas. Para mayor seguridad, considera:
+    // 1. Implementar Firebase Authentication
+    // 2. Limitar acceso por IP en Firebase Console
+    // 3. Usar Cloud Functions para operaciones sensibles
+
+    // Permitir acceso temporal durante desarrollo/producción
+    // En un entorno real, deberías implementar autenticación apropiada
+    function isAllowed() {
+      // Por ahora, permitir todo desde el servidor
+      return true;
+    }
+
+    // Colección de usuarios
+    match /usuarios/{userId} {
+      allow read: if isAllowed();
+      allow create: if isAllowed();
+      allow update: if isAllowed();
+      allow delete: if isAllowed();
+    }
+
+    // Logs de acceso
+    match /logs_acceso/{logId} {
+      allow read: if isAllowed();
+      allow create: if isAllowed();
+      allow update: if false; // Los logs no deben modificarse
+      allow delete: if false; // Los logs no deben eliminarse
+    }
+
+    // Datos de salidas (ventas)
+    match /salidas/{docId} {
+      allow read: if isAllowed();
+      allow write: if isAllowed();
+    }
+
+    // Datos de entradas (compras)
+    match /entradas/{docId} {
+      allow read: if isAllowed();
+      allow write: if isAllowed();
+    }
+
+    // Por defecto: denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

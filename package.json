@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "export": "next build",
+    "deploy": "next build && firebase deploy --only hosting",
+    "deploy:preview": "next build && firebase hosting:channel:deploy preview"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
