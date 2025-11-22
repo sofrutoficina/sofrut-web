@@ -35,7 +35,13 @@ export default function IncongruenciaCardV2({
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
   // Determinar si este tipo permite modificar rangos
-  const tieneRango = ['outliers_estadisticos', 'rangos_illogicos', 'patron_cliente_anomalo'].includes(incongruencia.tipo);
+  const tieneRango = [
+    'outliers_estadisticos',
+    'rangos_illogicos',
+    'patron_cliente_anomalo',
+    'valores_fuera_rango',  // Agregado
+    'rangos_fuera'  // Posible variante
+  ].includes(incongruencia.tipo);
 
   // Usar opciones del backend o generar si no vienen
   useEffect(() => {
@@ -159,6 +165,16 @@ export default function IncongruenciaCardV2({
       ];
     }
 
+    // Para valores fuera de rango
+    if (tipo === 'valores_fuera_rango' || tipo === 'rangos_fuera') {
+      return [
+        { valor: 'ajustar_rango', descripcion: 'Ajustar rango aceptable' },
+        { valor: 'corregir', descripcion: 'Corregir valor manualmente' },
+        { valor: 'eliminar', descripcion: 'Eliminar registro' },
+        { valor: 'mantener', descripcion: 'Mantener (es correcto)' }
+      ];
+    }
+
     // Default: opciones genéricas
     return [
       { valor: 'mantener', descripcion: 'Mantener como está' },
@@ -232,7 +248,18 @@ export default function IncongruenciaCardV2({
           </div>
           {incongruencia.ejemplos && incongruencia.ejemplos.length > 0 && (
             <div className="text-sm text-blue-700 mt-1">
-              📋 Ejemplos: {incongruencia.ejemplos.slice(0, 3).join(', ')}
+              📋 Ejemplos: {incongruencia.ejemplos.slice(0, 3).map((ej, i) => {
+                // Formatear ejemplos correctamente
+                if (typeof ej === 'object' && ej !== null) {
+                  // Si es objeto, mostrar valores principales
+                  const valores = Object.entries(ej)
+                    .slice(0, 3)
+                    .map(([k, v]) => `${k}: ${v}`)
+                    .join(', ');
+                  return valores;
+                }
+                return String(ej);
+              }).join(' | ')}
             </div>
           )}
         </div>
