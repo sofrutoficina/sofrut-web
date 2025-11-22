@@ -14,6 +14,14 @@ export interface ArchivoExcel {
   tipo: 'entradas' | 'salidas' | 'desconocido';
 }
 
+export interface OpcionIncongruencia {
+  valor: string;
+  frecuencia?: number;
+  porcentaje?: number;
+  descripcion?: string;
+  es_favorito: boolean;
+}
+
 export interface Incongruencia {
   tipo: string;
   campo?: string;
@@ -25,6 +33,7 @@ export interface Incongruencia {
     total_registros: number;
     porcentaje: number;
   };
+  opciones?: OpcionIncongruencia[];  // Opciones con frecuencias reales del backend
 }
 
 export interface Decision {

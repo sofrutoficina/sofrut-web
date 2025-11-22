@@ -37,14 +37,29 @@ export default function IncongruenciaCardV2({
   // Determinar si este tipo permite modificar rangos
   const tieneRango = ['outliers_estadisticos', 'rangos_illogicos', 'patron_cliente_anomalo'].includes(incongruencia.tipo);
 
-  // Generar opciones según el tipo de incongruencia
+  // Usar opciones del backend o generar si no vienen
   useEffect(() => {
-    const opcionesGeneradas = generarOpciones(incongruencia);
-    setOpciones(opcionesGeneradas);
+    // Primero intentar usar opciones del backend
+    if (incongruencia.opciones && incongruencia.opciones.length > 0) {
+      const opcionesDelBackend = incongruencia.opciones.map(op => ({
+        valor: op.valor,
+        frecuencia: op.frecuencia,
+        porcentaje: op.porcentaje,
+        descripcion: op.descripcion
+      }));
+      setOpciones(opcionesDelBackend);
 
-    // El favorito por defecto es el primero (más frecuente)
-    if (opcionesGeneradas.length > 0) {
-      setFavoritoIndex(0);
+      // Encontrar el índice del favorito
+      const favIndex = incongruencia.opciones.findIndex(op => op.es_favorito);
+      setFavoritoIndex(favIndex >= 0 ? favIndex : 0);
+    } else {
+      // Fallback: generar opciones localmente si el backend no las envió
+      const opcionesGeneradas = generarOpciones(incongruencia);
+      setOpciones(opcionesGeneradas);
+
+      if (opcionesGeneradas.length > 0) {
+        setFavoritoIndex(0);
+      }
     }
   }, [incongruencia]);
 
