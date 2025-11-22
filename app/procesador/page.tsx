@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import FileUpload from '@/components/procesador/FileUpload';
-import IncongruenciaCard from '@/components/procesador/IncongruenciaCard';
+import IncongruenciaCardV2 from '@/components/procesador/IncongruenciaCardV2';
 import RevisionFinal from '@/components/procesador/RevisionFinal';
 import {
   analizarIncongruencias,
@@ -222,7 +222,7 @@ export default function ProcesadorPage() {
         )}
 
         {fase === 'decisiones' && incongruencias.length > 0 && (
-          <IncongruenciaCard
+          <IncongruenciaCardV2
             incongruencia={incongruencias[indiceActual]}
             numero={indiceActual + 1}
             total={incongruencias.length}
