@@ -22,6 +22,7 @@ export default function ProcesadorPage() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultado, setResultado] = useState<any>(null);
+  const [modoModificacion, setModoModificacion] = useState(false);
 
   // Paso 1: Seleccionar archivo y analizar
   const handleArchivoSeleccionado = async (archivo: string) => {
@@ -62,6 +63,13 @@ export default function ProcesadorPage() {
     const nuevasDecisiones = [...decisiones, decisionCompleta];
     setDecisiones(nuevasDecisiones);
 
+    // Si estamos en modo modificación, volver directamente a revisión
+    if (modoModificacion) {
+      setModoModificacion(false);
+      setFase('revision');
+      return;
+    }
+
     // Si hay más incongruencias, avanzar
     if (indiceActual < incongruencias.length - 1) {
       setIndiceActual(indiceActual + 1);
@@ -73,6 +81,13 @@ export default function ProcesadorPage() {
 
   // Saltar incongruencia
   const handleSaltar = () => {
+    // Si estamos en modo modificación, volver a revisión sin hacer cambios
+    if (modoModificacion) {
+      setModoModificacion(false);
+      setFase('revision');
+      return;
+    }
+
     if (indiceActual < incongruencias.length - 1) {
       setIndiceActual(indiceActual + 1);
     } else {
@@ -90,6 +105,8 @@ export default function ProcesadorPage() {
     // Remover la decisión
     setDecisiones(decisiones.filter(d => d.numero !== numero));
 
+    // Activar modo modificación para volver directamente a revisión
+    setModoModificacion(true);
     setFase('decisiones');
   };
 

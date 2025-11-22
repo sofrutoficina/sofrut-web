@@ -34,6 +34,10 @@ export interface Incongruencia {
     porcentaje: number;
   };
   opciones?: OpcionIncongruencia[];  // Opciones con frecuencias reales del backend
+  rango_actual?: {
+    min: number;
+    max: number;
+  };
 }
 
 export interface Decision {

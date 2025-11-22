@@ -249,12 +249,20 @@ export default function IncongruenciaCardV2({
           {incongruencia.ejemplos && incongruencia.ejemplos.length > 0 && (
             <div className="text-sm text-blue-700 mt-1">
               📋 Ejemplos: {incongruencia.ejemplos.slice(0, 3).map((ej, i) => {
-                // Formatear ejemplos correctamente
+                // Formatear ejemplos correctamente (incluso objetos anidados)
                 if (typeof ej === 'object' && ej !== null) {
                   // Si es objeto, mostrar valores principales
                   const valores = Object.entries(ej)
-                    .slice(0, 3)
-                    .map(([k, v]) => `${k}: ${v}`)
+                    .map(([k, v]) => {
+                      // Si el valor es un objeto anidado, serializarlo
+                      if (typeof v === 'object' && v !== null) {
+                        const nested = Object.entries(v)
+                          .map(([nk, nv]) => `${nk}: ${nv}`)
+                          .join(', ');
+                        return `${k}: {${nested}}`;
+                      }
+                      return `${k}: ${v}`;
+                    })
                     .join(', ');
                   return valores;
                 }
@@ -344,14 +352,20 @@ export default function IncongruenciaCardV2({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               📏 Modificar rango aceptable (opcional):
             </label>
+            {incongruencia.rango_actual && (
+              <div className="text-xs text-gray-600 mb-2">
+                Actual: {incongruencia.rango_actual.min} - {incongruencia.rango_actual.max}
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-gray-600">Mínimo:</label>
                 <input
                   type="number"
+                  step="0.01"
                   value={rangoMin}
                   onChange={(e) => setRangoMin(e.target.value)}
-                  placeholder="Ej: 0.5"
+                  placeholder={incongruencia.rango_actual ? `Actual: ${incongruencia.rango_actual.min}` : "Ej: 0.5"}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -359,9 +373,10 @@ export default function IncongruenciaCardV2({
                 <label className="text-xs text-gray-600">Máximo:</label>
                 <input
                   type="number"
+                  step="0.01"
                   value={rangoMax}
                   onChange={(e) => setRangoMax(e.target.value)}
-                  placeholder="Ej: 100"
+                  placeholder={incongruencia.rango_actual ? `Actual: ${incongruencia.rango_actual.max}` : "Ej: 100"}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
