@@ -216,7 +216,7 @@ export default function ProcesadorPage() {
               Analizando archivo...
             </div>
             <div className="text-gray-600">
-              Aplicando 12 tipos de validación (Niveles 1-5)
+              Detectando variaciones y valores problemáticos
             </div>
           </div>
         )}
